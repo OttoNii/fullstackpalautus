@@ -37,4 +37,4 @@ const Header = (props) => {
     )
   }
 
-  export {Course}
+  export default Course
