@@ -2,15 +2,17 @@ import { useState, useEffect} from 'react'
 import personService from './services/persons'
 
 
-const Person = ({ person}) => {
-  return <p>{person.name}  {person.number}</p>;
+const Person = ({person, deletePerson}) => {
+  return <p>{person.name} {person.number} <button onClick={() => deletePerson(person)}>Delete</button> </p>;
 };
 
-const Persons = ({filteredPersons}) => {
+
+const Persons = ({filteredPersons, deletePerson}) => {
   return(
     <div>
         {filteredPersons.map(person => 
-          <Person key={person.name} person={person} />
+          <Person key={person.name} person={person} deletePerson={deletePerson} />
+          
         )}
       </div>
   )
@@ -51,12 +53,11 @@ const App = () => {
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
-    console.log('effect')
-    personService.getAll().then(response => { setPersons(response.data)
+    personService.getAll().then(initialPersons => {
+      setPersons(initialPersons)
       })
   }, [])
-  console.log('render', persons.length, 'persons')
-
+  
   const handleNameChange = (event) => {
     console.log(event.target.value)
     setNewName(event.target.value)
@@ -72,6 +73,17 @@ const App = () => {
     setFilter(event.target.value)
   }
 
+  const deletePerson = (person) => {
+    if(window.confirm(`Do you want to delete ${person.name}`)) {
+      personService.del(person.id).then(
+        setPersons(persons.filter(p => p.id !== person.id))
+      ).catch(error => {
+        console.error('Failed to delete person:', error)
+  })
+    
+  }
+    
+  }
   const addPerson = (event) => {
     event.preventDefault()
     const nameExists = persons.some(person => person.name === newName)
@@ -83,13 +95,14 @@ const App = () => {
       setPersons([...persons, newPerson])
       setNewName('')
       setNewNumber('')
-      personService.create(newPerson).then(response => {
-        setPersons(persons.concat(response.data))
+      personService.create(newPerson).then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
       })
     
     }
   }
 
+  
   const filteredPersons = filter === ''
     ? persons
     : persons.filter(person =>
@@ -111,7 +124,8 @@ const App = () => {
       handleNumberChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      <Persons filteredPersons={filteredPersons} />
+      <Persons filteredPersons={filteredPersons}
+        deletePerson={deletePerson} />
     </div>
   )
 }
