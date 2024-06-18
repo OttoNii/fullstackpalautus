@@ -17,9 +17,11 @@ const del = id => {
       });
         console.log(`Deleted person with ID ${id} `)
       return request.then(response => response.data)
-
-    
-
 }
 
-export default { getAll, create, del}
+const updateNumber = (id, newNumber) =>{
+    const request = axios.put(`${baseURL}/${id}`, newNumber)
+      return request.then(response => response.data)
+}
+
+export default { getAll, create, del, updateNumber}
