@@ -1,5 +1,6 @@
 import { useState, useEffect} from 'react'
 import personService from './services/persons'
+import './index.css'
 
 
 const Person = ({person, deletePerson}) => {
@@ -17,6 +18,18 @@ const Persons = ({filteredPersons, deletePerson}) => {
       </div>
   )
 }
+
+const Notification = ({ message }) => {
+    if (message === null) {
+      return null
+    }
+  
+    return (
+      <div className="okMessage">
+        {message}
+      </div>
+    )
+  }
 
 const PersonForm = ({addPerson, newName, handleNameChange, newNumber, handleNumberChange}) => {
   return(
@@ -41,7 +54,7 @@ const PersonForm = ({addPerson, newName, handleNameChange, newNumber, handleNumb
 const Filter = ({ filter, handleFilterChange }) => {
   return (
     <div>
-      <input value={filter} onChange={handleFilterChange} />
+      Name Filter: <input value={filter} onChange={handleFilterChange} />
     </div>
   );
 };
@@ -51,6 +64,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('');
+  const [okMessage, setOkMessage] = useState(null)
 
   useEffect(() => {
     personService.getAll().then(initialPersons => {
@@ -80,8 +94,14 @@ const App = () => {
       ).catch(error => {
         console.error('Failed to delete person:', error)
   })
+    setOkMessage(`${person.name} deleted succesfylly`)
+    setTimeout(() => {
+      setOkMessage(null)
+    }, 5000)
     
   }
+
+  
     
   }
   const addPerson = (event) => {
@@ -96,6 +116,10 @@ const App = () => {
         personService.updateNumber(person.id, changedPerson ).then(returnedPerson => {
           setPersons(persons.map(person => person.name !== newName ? person : returnedPerson))
         })
+        setOkMessage(`${newName} 's number was updated succesfully`)
+        setTimeout(() =>{
+          setOkMessage(null)
+        }, 5000)
       }
     } else {
       const newPerson = { name: newName, number: newNumber}
@@ -106,7 +130,10 @@ const App = () => {
       personService.create(newPerson).then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
       })
-    
+      setOkMessage(`${newName} 's number was added succesfully`)
+        setTimeout(() =>{
+          setOkMessage(null)
+        }, 5000)
     }
   }
 
@@ -121,6 +148,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
+      <Notification message={okMessage} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
 
       <h3>Add new</h3>
