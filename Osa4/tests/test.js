@@ -9,16 +9,7 @@ test('dummy returns one', () => {
   assert.strictEqual(result, 1)
 })
 
-describe('totalLikes', () => {
-
-  test('return zero when the list is empty', () => {
-    const blogs = []
-
-    const result = listHelper.totalLikes(blogs)
-    assert.strictEqual(result, 0)
-  })
-
-  const listWithOneBlog = [
+const listWithOneBlog = [
     {
       _id: '5a422aa71b54a676234d17f8',
       title: 'Go To Statement Considered Harmful',
@@ -29,12 +20,7 @@ describe('totalLikes', () => {
     }
   ]
 
-  test('when list has only one blog equals the likes of that', () => {
-    const result = listHelper.totalLikes(listWithOneBlog)
-    assert.strictEqual(result, 5)
-  })
-
-  const blogs = [
+const blogs = [
     {
       _id: "5a422a851b54a676234d17f7",
       title: "React patterns",
@@ -64,7 +50,7 @@ describe('totalLikes', () => {
       title: "First class tests",
       author: "Robert C. Martin",
       url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
-      likes: 10,
+      likes: 12,
       __v: 0
     },
     {
@@ -85,10 +71,42 @@ describe('totalLikes', () => {
     }  
   ]
 
-  test('when list has many blogs likes are summed together', () => {
+describe('totalLikes', () => {
+
+  test('return zero when the list is empty', () => {
+    const blogs = []
+
     const result = listHelper.totalLikes(blogs)
-    assert.strictEqual(result, 36)
+    assert.strictEqual(result, 0)
   })
 
-  
+  test('when list has only one blog equals the likes of that', () => {
+    const result = listHelper.totalLikes(listWithOneBlog)
+    assert.strictEqual(result, 5)
+  })
+
+  test('when list has many blogs likes are summed together', () => {
+    const result = listHelper.totalLikes(blogs)
+    assert.strictEqual(result, 38)
+  })
+})
+
+describe('favouriteBlog', () => {
+
+  test('return zero when the list is empty', () => {
+    const emptyBlogs = []
+
+    const result = listHelper.favouriteBlog(emptyBlogs)
+    assert.strictEqual(result, null)
+  })
+
+  test('when list has only one blog equals the likes of that', () => {
+    const result = listHelper.favouriteBlog(listWithOneBlog)
+    assert.deepStrictEqual(result, { title: "Go To Statement Considered Harmful", author: "Edsger W. Dijkstra", likes: 5 })
+  })
+
+  test('when list has many blogs likes are summed together', () => {
+    const result = listHelper.favouriteBlog(blogs)
+    assert.deepStrictEqual(result, {title: "Canonical string reduction", author: "Edsger W. Dijkstra", likes: 12})
+  })
 })
